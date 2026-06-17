@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Tables</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #ffffff;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .group-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 25px;
+        background: #fafafa;
+    }
+
+    th {
+        background: #d4af37;
+        color: #fff;
+        padding: 8px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    td.team {
+        text-align: left;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+<h1>Tables</h1>
+
+<div id="tables-container"></div>
+
+<script>
+const CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1IF3w1E7awTNUm9acC8SX_HBdMdLNIkPrTokxaE5YEYE/export?format=csv&gid=182260623";
+
+async function loadCSV() {
+    const response = await fetch(CSV_URL);
+    const text = await response.text();
+    const rows = text.split("\n").map(r => r.split(","));
+    renderTables(rows);
+}
+
+function renderTables(rows) {
+    const container = document.getElementById("tables-container");
+    container.innerHTML = "";
+
+    let i = 0;
+    while (i < rows.length) {
+        let groupName = rows[i][0].trim();
+        if (!groupName) { i++; continue; }
+
+        let header = rows[i + 1];
+        let teams = rows.slice(i + 2, i + 6);
+
+        let html = `
+            <div class="group-title">${groupName}</div>
+            <table>
+                <tr>${header.map(h => `<th>${h}</th>`).join("")}</tr>
+                ${teams.map(t => `
+                    <tr>
+                        ${t.map((v, idx) =>
+                            idx === 1
+                                ? `<td class="team">${v}</td>`
+                                : `<td>${v}</td>`
+                        ).join("")}
+                    </tr>
+                `).join("")}
+            </table>
+        `;
+
+        container.innerHTML += html;
+        i += 6;
+    }
+}
+
+loadCSV();
+</script>
+
+</body>
+</html>
