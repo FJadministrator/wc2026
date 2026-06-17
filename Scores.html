@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Scores</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #ffffff;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .match-card {
+        border: 1px solid #ddd;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        background: #fafafa;
+    }
+
+    .match-header {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .team-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 15px;
+    }
+
+    .team-name {
+        font-weight: bold;
+    }
+
+    .score {
+        font-size: 18px;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+<h1>Scores</h1>
+
+<div id="scores-container"></div>
+
+<script>
+const CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1IF3w1E7awTNUm9acC8SX_HBdMdLNIkPrTokxaE5YEYE/export?format=csv&gid=1520431035";
+
+async function loadCSV() {
+    const response = await fetch(CSV_URL);
+    const text = await response.text();
+    const rows = text.split("\n").map(r => r.split(","));
+    renderScores(rows);
+}
+
+function renderScores(rows) {
+    const container = document.getElementById("scores-container");
+    container.innerHTML = "";
+
+    for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        if (!r[0]) continue;
+
+        const date = r[0];
+        const time = r[1];
+        const teamA = r[2];
+        const scoreA = r[3];
+        const teamB = r[4];
+        const scoreB = r[5];
+
+        container.innerHTML += `
+            <div class="match-card">
+                <div class="match-header">${date} — ${time}</div>
+                <div class="team-row">
+                    <div class="team-name">${teamA}</div>
+                    <div class="score">${scoreA}</div>
+                </div>
+                <div class="team-row">
+                    <div class="team-name">${teamB}</div>
+                    <div class="score">${scoreB}</div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+loadCSV();
+</script>
+
+</body>
+</html>
